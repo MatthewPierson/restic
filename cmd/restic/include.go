@@ -130,3 +130,7 @@ func (opts includePatternOptions) GetPathsFromPatterns() ([]string, error) {
 	opts.Includes = append(opts.Includes, opts.InsensitiveIncludes...)
 	return opts.Includes, nil
 }
+
+func (opts *includePatternOptions) Empty() bool {
+	return len(opts.Includes) == 0 && len(opts.InsensitiveIncludes) == 0 && len(opts.IncludeFiles) == 0 && len(opts.InsensitiveIncludeFiles) == 0
+}

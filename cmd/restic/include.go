@@ -98,3 +98,35 @@ func includeByInsensitivePattern(patterns []string) IncludeByNameFunc {
 		return includeFunc(strings.ToLower(item))
 	}
 }
+
+func (opts includePatternOptions) GetPathsFromPatterns() ([]string, error) {
+	// add patterns from file
+	if len(opts.IncludeFiles) > 0 {
+		includePatterns, err := readPatternsFromFiles(opts.IncludeFiles)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := filter.ValidatePatterns(includePatterns); err != nil {
+			return nil, errors.Fatalf("--include-file: %s", err)
+		}
+
+		opts.Includes = append(opts.Includes, includePatterns...)
+	}
+
+	if len(opts.InsensitiveIncludeFiles) > 0 {
+		includes, err := readPatternsFromFiles(opts.InsensitiveIncludeFiles)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := filter.ValidatePatterns(includes); err != nil {
+			return nil, errors.Fatalf("--iinclude-file: %s", err)
+		}
+
+		opts.InsensitiveIncludes = append(opts.InsensitiveIncludes, includes...)
+	}
+
+	opts.Includes = append(opts.Includes, opts.InsensitiveIncludes...)
+	return opts.Includes, nil
+}
